@@ -46,6 +46,27 @@ int buscar_codigo(Diccionario *tabla_hash[], const char *secuencia) {
     return -1;
 }
 
+// Escribe un código de 12 bits en el archivo usando un buffer de bits
+void escribir_codigo(FILE *salida, unsigned int codigo, int *bit_buffer, int *bit_count) {
+    // Agregar los 12 bits al buffer
+    *bit_buffer |= (codigo << *bit_count);
+    *bit_count += 12;
+
+    // Escribir bytes completos desde el buffer
+    while (*bit_count >= 8) {
+        fputc(*bit_buffer & 0xFF, salida);  // Escribir el byte menos significativo
+        *bit_buffer >>= 8;  // Desplazar el buffer
+        *bit_count -= 8;  // Reducir el conteo de bits
+    }
+}
+
+// Vacía los bits restantes en el buffer al archivo
+void vaciar_buffer(FILE *salida, int *bit_buffer, int *bit_count) {
+    if (*bit_count > 0) {  // Si quedan bits en el buffer
+        fputc(*bit_buffer & 0xFF, salida);  // Escribir el último byte
+    }
+}
+
 void comprimir_archivo(const char *entrada_path, const char *salida_path) {
     FILE *entrada = fopen(entrada_path, "r");
     FILE *salida = fopen(salida_path, "wb");
@@ -68,6 +89,11 @@ void comprimir_archivo(const char *entrada_path, const char *salida_path) {
     int longitud_buffer = 0;
     int c;
 
+    // Variables para la gestión de bits
+    int bit_buffer = 0;  // Buffer temporal para bits incompletos
+    int bit_count = 0;   // Conteo de bits en el buffer
+
+    // Compresión
     while ((c = fgetc(entrada)) != EOF) {
         buffer[longitud_buffer++] = c;
         buffer[longitud_buffer] = '\0';
@@ -75,7 +101,9 @@ void comprimir_archivo(const char *entrada_path, const char *salida_path) {
         if (buscar_codigo(tabla_hash, buffer) == -1) {
             buffer[longitud_buffer - 1] = '\0';
             int codigo = buscar_codigo(tabla_hash, buffer);
-            fwrite(&codigo, sizeof(int), 1, salida);
+
+            // Escribir el código de 12 bits
+            escribir_codigo(salida, codigo, &bit_buffer, &bit_count);
 
             if (codigo_siguiente < DICT_SIZE) {
                 buffer[longitud_buffer - 1] = c;
@@ -88,11 +116,15 @@ void comprimir_archivo(const char *entrada_path, const char *salida_path) {
         }
     }
 
+    // Escribir el último código si queda algo en el buffer
     if (longitud_buffer > 0) {
         buffer[longitud_buffer] = '\0';
         int codigo = buscar_codigo(tabla_hash, buffer);
-        fwrite(&codigo, sizeof(int), 1, salida);
+        escribir_codigo(salida, codigo, &bit_buffer, &bit_count);
     }
+
+    // Vaciar el buffer de bits restante
+    vaciar_buffer(salida, &bit_buffer, &bit_count);
 
     fclose(entrada);
     fclose(salida);
