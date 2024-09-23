@@ -127,7 +127,12 @@ void descomprimir_archivo(const char *entrada_path, const char *salida_path) {
     fclose(salida);
 }
 
-int main() {
-    descomprimir_archivo("comprimido.lzw", "descomprimido.txt");
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        fprintf(stderr, "Uso: %s <archivo_entrada> <archivo_salida>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    descomprimir_archivo(argv[1], argv[2]);
     return 0;
 }
