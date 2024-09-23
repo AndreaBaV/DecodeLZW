@@ -79,7 +79,7 @@ void descomprimir_archivo(const char *entrada_path, const char *salida_path) {
 
     // Inicializar diccionario con caracteres individuales
     for (int i = 0; i < 256; i++) {
-        char secuencia[2] = { i, '\0' };
+        char secuencia[2] = { (char)i, '\0' };
         agregar_entrada(tabla_hash, secuencia, i);
     }
 
@@ -95,6 +95,16 @@ void descomprimir_archivo(const char *entrada_path, const char *salida_path) {
             secuencia = (char[]){(char)codigo, '\0'};
         } else {
             secuencia = buscar_secuencia(tabla_hash, codigo);
+        }
+
+        // Si no se encuentra la secuencia, es posible que sea una nueva entrada en el diccionario
+        if (!secuencia && codigo == codigo_siguiente) {
+            const char *anterior_secuencia = buscar_secuencia(tabla_hash, anterior_codigo);
+            if (anterior_secuencia) {
+                char nueva_secuencia[MAX_SEQ_LENGTH];
+                snprintf(nueva_secuencia, sizeof(nueva_secuencia), "%s%c", anterior_secuencia, anterior_secuencia[0]);
+                secuencia = nueva_secuencia;
+            }
         }
 
         if (secuencia) {
