@@ -6,7 +6,7 @@
 #define MAX_SEQ_LENGTH 256
 
 typedef struct Diccionario {
-    char secuencia[MAX_SEQ_LENGTH];
+    unsigned char secuencia[MAX_SEQ_LENGTH];
     int codigo;
     struct Diccionario *siguiente;
 } Diccionario;
