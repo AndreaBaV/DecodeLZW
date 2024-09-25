@@ -44,6 +44,7 @@ unsigned int funcionHash(const unsigned char *patron, int longitud) {
                                          el tipo de dato que contiene son Diccionarios)
 
                   Notas: calloc reserva e inicializa con el valor 0
+                  Fuentes de información: 1.4 ReadMe
 
 
  */
