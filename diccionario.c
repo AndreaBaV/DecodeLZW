@@ -58,7 +58,22 @@ void inicializacion(Diccionario *tablaHash) {
 */
 
 void registro(Diccionario *tablaHash, const unsigned char *patron, int longitud, int codigo) {
-    //pendiente
+    unsigned int numeroBucket = funcionHash(patron, longitud);
+    Diccionario *nuevo = (Diccionario *)malloc(sizeof(Diccionario));
+    memcpy(nuevo->patron, patron, longitud);
+    nuevo->longitud= longitud;
+    nuevo->codigo= codigo;
+
+    if(tablaHash[numeroBucket]==NULL){
+      tablaHash[numeroBucket] = nuevo;
+      nuevo->siguiente=NULL;
+    }
+    else {
+     Diccionario *actual = tablaHash[numeroBucket];
+     while (actual->siguiente != NULL){
+      actual = 
+     }
+    }
 }
 
 Diccionario* busqueda(Diccionario *tablaHash, int codigo) {
