@@ -6,4 +6,6 @@
 
 2. Métodos de C
 
-2.1 calloc - cppreference.com. (s. f.). https://en.cppreference.com/w/c/memory/calloc
+2.1 calloc - cppreference.com. (s. f.). https://en.cppreference.com/w/c/memory/calloc  
+
+2.2 memcpy - cplusplus.com (s.f.). https://cplusplus.com/reference/cstring/memcpy/
